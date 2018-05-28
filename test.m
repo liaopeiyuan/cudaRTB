@@ -1,16 +1,22 @@
-h=21;
-for i=1:h
-    a=randn(2^i,3);i
+h=1:5000:200001;
+for i=1:5000:200001
+    ct1=1;
+    ct2=1;
+    
+    a=randn(i,3);
     b=gpuArray(a);
     tic
     z=eul2r(a);
-    t(i)=toc;
+    t(ct1)=toc;
+    ct1=ct1+1;
     
     tic
     z=ceul2r(b);
-    g(i)=toc;
+    g(ct2)=toc;
+    ct2=ct2+1;
+    
 end
-plot(1:h,t)
+plot(h,t)
 hold on
-plot(1:h,g)
+plot(h,g)
 set(gca, 'YScale', 'log')

@@ -15,7 +15,7 @@ function R = crotz(t, deg)
     if nargin > 1 && strcmp(deg, 'deg')
         t = pagefun(@times,t,pi/180);
     end
-    t=t'
+    t=t';
     ct = pagefun(@cos,t);
     st = pagefun(@sin,t);
     a = ones(size(t),'gpuArray');
