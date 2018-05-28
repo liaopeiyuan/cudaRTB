@@ -48,12 +48,12 @@ function R = ceul2r(phi, varargin)
 
     % unpack the arguments
     if numcols(phi) == 3
-		theta = phi(:,2);
-		psi = phi(:,3);
-		phi = phi(:,1);
+		theta = gpuArray(phi(:,2));
+		psi = gpuArray(phi(:,3));
+		phi = gpuArray(phi(:,1));
 	elseif nargin >= 3
-        theta = args{1};
-        psi = args{2};
+        theta = gpuArray(args{1});
+        psi = gpuArray(args{2});
     else
         error('RTB:eul2r:badarg', 'expecting 3 inputs, 3-vector or 3-column matrix')
     end
@@ -61,7 +61,7 @@ function R = ceul2r(phi, varargin)
     % optionally convert from degrees
     if opt.deg
         d2r = pi/180.0;
-        phi = gpuArray(phi * d2r);
+        phi = pagefun(@times,phi,d2r);
         theta = gpuArray(theta * d2r);
         psi = gpuArray(psi * d2r);
     end
@@ -69,8 +69,5 @@ function R = ceul2r(phi, varargin)
     if numrows(phi) == 1
         R = pagefun(@mtimes,pagefun(@mtimes,crotz(phi), croty(theta)),crotz(psi));
     else
-        R = gpuArray(zeros(3,3,numrows(phi)));
-        for i=1:numrows(phi)
-            R(:,:,i) = pagefun(@mtimes,pagefun(@mtimes,crotz(phi(i)),croty(theta(i))),crotz(psi(i)));
-        end
+        R = pagefun(@mtimes,pagefun(@mtimes,crotz(phi),croty(theta)),crotz(psi));
     end

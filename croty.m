@@ -30,6 +30,7 @@
 % http://www.petercorke.com
 
 function R = croty(t, deg)
+    %{
     if nargin > 1 && strcmp(deg, 'deg')
         t = t *pi/180;
     end
@@ -40,3 +41,19 @@ function R = croty(t, deg)
         0   1   0
        -st  0   ct
        ]);
+   %}
+    if nargin > 1 && strcmp(deg, 'deg')
+        t = pagefun(@times,t,pi/180);
+    end
+    t=t'
+    ct = pagefun(@cos,t);
+    st = pagefun(@sin,t);
+    a = ones(size(t),'gpuArray');
+    b = zeros(size(t),'gpuArray');
+    f = cat(1,ct,b,st);
+    s = cat(1,b,a,b);
+    th = cat(1,-st,b,ct);
+    R = cat(3,f,s,th);
+    R = permute(R,[3 1 2]);
+
+   

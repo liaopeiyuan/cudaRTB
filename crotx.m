@@ -32,13 +32,17 @@
 function R = crotx(t, deg)
 
     if nargin > 1 && strcmp(deg, 'deg')
-        t = t *pi/180;
+        t = pagefun(@times,t,pi/180);
     end
     
-    ct = cos(t);
-    st = sin(t);
-    R = gpuArray([
-        1   0    0
-        0   ct  -st
-        0   st   ct
-        ]);
+    ct = pagefun(@cos,t);
+    st = pagefun(@sin,t);
+    a = ones(size(t),'gpuArray');
+    b = zeros(size(t),'gpuArray');
+    f = cat(1,a,b,b);
+    s = cat(1,b,ct,-st);
+    th = cat(1,b,st,ct);
+    R = cat(3,f,s,th);
+    R = permute(R,[3 1 2]);
+
+    
